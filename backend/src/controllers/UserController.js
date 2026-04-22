@@ -35,6 +35,15 @@ class UserController {
             res.status(401).json({ error: error.message });
         }
     }
+
+    async getLeaderboard(req, res) {
+        try {
+            const leaderboard = await this.userService.getLeaderboard();
+            res.json(leaderboard);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = UserController;

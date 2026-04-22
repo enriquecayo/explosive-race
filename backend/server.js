@@ -17,9 +17,9 @@ app.use(express.json());
 const socketService = new SocketService(server);
 
 // Rutes HTTP
-app.use("/api/users", userRoutes);
+app.use("/api", userRoutes);
 
-app.get("/health", (_req, res) => {
+app.get("/api/health", (_req, res) => {
   res.json({ 
     status: "ok", 
     mode: "MongoDB (Atlas)",

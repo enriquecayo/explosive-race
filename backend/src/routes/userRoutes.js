@@ -10,7 +10,8 @@ const userRepository = new MongoUserRepository();
 const userService = new UserService(userRepository);
 const userController = new UserController(userService);
 
-router.post('/register', (req, res) => userController.register(req, res));
-router.post('/login', (req, res) => userController.login(req, res));
+router.post('/users/register', (req, res) => userController.register(req, res));
+router.post('/users/login', (req, res) => userController.login(req, res));
+router.get('/leaderboard', (req, res) => userController.getLeaderboard(req, res));
 
 module.exports = router;

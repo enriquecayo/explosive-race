@@ -46,6 +46,15 @@ class UserService {
         const { password: _, ...userWithoutPassword } = user;
         return userWithoutPassword;
     }
+
+    async getLeaderboard() {
+        const users = await this.userRepository.getAll();
+        // Sort by score descending and take top 10
+        return users
+            .sort((a, b) => (b.score || 0) - (a.score || 0))
+            .slice(0, 10)
+            .map(({ password: _, ...user }) => user);
+    }
 }
 
 module.exports = UserService;
