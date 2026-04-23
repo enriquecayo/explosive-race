@@ -6,8 +6,8 @@
   >
     <v-container class="d-flex align-center justify-space-between py-0">
       <RouterLink class="brand-link" to="/">
-        <span class="brand-kicker">Game Hub</span>
-        <span class="brand-name">TR3 Enrique</span>
+        <span class="brand-kicker">Lloc Oficial</span>
+        <span class="brand-name">Explosive Race</span>
       </RouterLink>
 
       <div class="nav-links d-none d-md-flex align-center ga-2">
@@ -29,7 +29,7 @@
           variant="flat"
           @click="authStore.logout()"
         >
-          Logout
+          Sortir
         </v-btn>
       </div>
 
@@ -52,7 +52,7 @@
           />
           <v-list-item
             v-if="authStore.isAuthenticated"
-            title="Logout"
+            title="Sortir"
             @click="authStore.logout()"
           />
         </v-list>
@@ -70,8 +70,8 @@
   const authStore = useAuthStore()
 
   const navItems = computed(() => [
-    { label: 'Home', to: '/' },
-    { label: 'Downloads', to: '/downloads' },
+    { label: 'Inici', to: '/' },
+    { label: 'Descarregues', to: '/downloads' },
     {
       label: authStore.isAuthenticated ? 'Estadístiques' : 'Login',
       to: authStore.isAuthenticated ? '/profile/estadistiques' : '/login',

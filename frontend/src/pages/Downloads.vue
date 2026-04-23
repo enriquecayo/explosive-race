@@ -3,40 +3,40 @@
     <v-container class="py-10 py-md-16">
       <div class="downloads-hero">
         <div>
-          <p class="section-label">Game Distribution</p>
-          <h1 class="downloads-title">Download the latest TR3 Enrique build.</h1>
+          <p class="section-label">Distribució del Joc</p>
+          <h1 class="downloads-title">Descarrega l'última versió d'Explosive Race.</h1>
           <p class="downloads-copy">
-            Ship your Unity executable from a single player-facing page with release notes,
-            platform status, and setup guidance.
+            Accedeix a la build oficial per a escriptori. Inclou les darreres actualitzacions, 
+            correcció d'errors i sincronització amb el rànquing global.
           </p>
         </div>
         <v-chip class="status-chip" size="large">
-          Current channel: Stable
+          Canal actual: Estable
         </v-chip>
       </div>
 
       <v-row class="mt-2" dense>
         <v-col cols="12" md="8">
           <v-card class="download-card fill-height" rounded="xl">
-            <v-card-title class="text-h5">Windows Desktop Build</v-card-title>
-            <v-card-subtitle>Version 0.6.0 • Updated for Phase 6 rollout</v-card-subtitle>
+            <v-card-title class="text-h5">Build per a Windows</v-card-title>
+            <v-card-subtitle>Versió 0.6.0 • Actualitzat recentment</v-card-subtitle>
             <v-card-text class="pt-6">
               <p class="download-copy">
-                Package your exported Unity executable or installer behind this button.
-                Replace the URL with your real artifact endpoint when the build pipeline is ready.
+                Utilitza aquest botó per descarregar l'instal·lador d'Explosive Race. 
+                Recorda que cal estar registrat per sincronitzar les teves victòries.
               </p>
 
               <div class="release-meta">
                 <div>
-                  <span class="meta-label">Package</span>
-                  <strong>TR3-Enrique-Setup.exe</strong>
+                  <span class="meta-label">Paquet</span>
+                  <strong>Explosive-Race-Setup.exe</strong>
                 </div>
                 <div>
-                  <span class="meta-label">Estimated size</span>
+                  <span class="meta-label">Mida estimada</span>
                   <strong>1.2 GB</strong>
                 </div>
                 <div>
-                  <span class="meta-label">Compatibility</span>
+                  <span class="meta-label">Compatibilitat</span>
                   <strong>Windows 10 / 11</strong>
                 </div>
               </div>
@@ -44,14 +44,14 @@
             <v-card-actions class="px-6 pb-6">
               <v-btn
                 class="download-btn"
-                href="https://example.com/downloads/TR3-Enrique-Setup.exe"
+                href="#"
                 prepend-icon="mdi-download"
                 rounded="xl"
                 size="large"
                 target="_blank"
                 variant="flat"
               >
-                Download Executable
+                Descarregar executable
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -59,23 +59,23 @@
 
         <v-col cols="12" md="4">
           <v-card class="download-card fill-height" rounded="xl">
-            <v-card-title>System Requirements</v-card-title>
+            <v-card-title>Requisits del sistema</v-card-title>
             <v-card-text class="requirements-list">
               <div class="requirement-item">
                 <span>CPU</span>
-                <strong>Intel i5 / Ryzen 5 or better</strong>
+                <strong>Intel i5 / Ryzen 5 o millor</strong>
               </div>
               <div class="requirement-item">
                 <span>RAM</span>
-                <strong>8 GB minimum</strong>
+                <strong>8 GB mínim</strong>
               </div>
               <div class="requirement-item">
                 <span>GPU</span>
-                <strong>DirectX 11 compatible</strong>
+                <strong>Compatible amb DirectX 11</strong>
               </div>
               <div class="requirement-item">
-                <span>Storage</span>
-                <strong>2 GB free space</strong>
+                <span>Espai</span>
+                <strong>2 GB lliures</strong>
               </div>
             </v-card-text>
           </v-card>
@@ -83,17 +83,17 @@
       </v-row>
 
       <v-card class="download-card mt-6" rounded="xl">
-        <v-card-title>Installation Notes</v-card-title>
+        <v-card-title>Notes d'instal·lació</v-card-title>
         <v-card-text>
           <v-timeline align="start" density="compact" side="end">
             <v-timeline-item dot-color="#f1b36b" fill-dot size="small">
-              Download the executable and allow Windows to verify the file.
+              Descarrega l'executable i permet que Windows verifiqui el fitxer.
             </v-timeline-item>
             <v-timeline-item dot-color="#d77a61" fill-dot size="small">
-              Run the installer and choose your target directory.
+              Executa l'instal·lador i tria el directori de destinació.
             </v-timeline-item>
             <v-timeline-item dot-color="#8fb8d8" fill-dot size="small">
-              Launch the game, then authenticate through the Login page to sync your profile.
+              Inicia el joc i identifica't a la pàgina de Login per sincronitzar el teu perfil.
             </v-timeline-item>
           </v-timeline>
         </v-card-text>
@@ -101,6 +101,10 @@
     </v-container>
   </div>
 </template>
+
+<script lang="ts" setup>
+  // Cap lògica addicional necessària per ara
+</script>
 
 <style scoped>
   .downloads-page {

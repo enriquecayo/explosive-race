@@ -4,8 +4,8 @@
       <v-row align="stretch" justify="center">
         <v-col cols="12" md="5">
           <v-card class="auth-card fill-height" rounded="xl">
-            <v-card-title class="text-h4">Player Access</v-card-title>
-            <v-card-subtitle>Authenticate with your Game Hub account</v-card-subtitle>
+            <v-card-title class="text-h4">Accés de Jugador</v-card-title>
+            <v-card-subtitle>Identifica't amb el teu compte d'Explosive Race</v-card-subtitle>
             <v-card-text class="pt-6">
               <v-alert
                 v-if="authStore.error"
@@ -22,7 +22,7 @@
                   v-model="credentials.username"
                   autocomplete="username"
                   class="mb-3"
-                  label="Username"
+                  label="Nom d'usuari"
                   prepend-inner-icon="mdi-account-outline"
                   type="text"
                   variant="outlined"
@@ -31,7 +31,7 @@
                   v-model="credentials.password"
                   autocomplete="current-password"
                   class="mb-2"
-                  label="Password"
+                  label="Contrasenya"
                   prepend-inner-icon="mdi-lock-outline"
                   type="password"
                   variant="outlined"
@@ -46,7 +46,7 @@
                   type="submit"
                   variant="flat"
                 >
-                  Sign In
+                  Entrar
                 </v-btn>
               </v-form>
             </v-card-text>
@@ -56,21 +56,21 @@
         <v-col cols="12" md="7">
           <v-card class="profile-card fill-height" rounded="xl">
             <v-card-title class="text-h4">
-              {{ authStore.isAuthenticated ? 'Profile Overview' : 'Profile Preview' }}
+              {{ authStore.isAuthenticated ? 'Resum del Perfil' : 'Previsualització' }}
             </v-card-title>
             <v-card-subtitle>
-              {{ authStore.isAuthenticated ? 'Live data from the backend API' : 'Sign in to load player data.' }}
+              {{ authStore.isAuthenticated ? 'Dades sincronitzades amb el servidor' : 'Inicia sessió per carregar les dades del jugador.' }}
             </v-card-subtitle>
             <v-card-text class="pt-6">
               <template v-if="authStore.isAuthenticated && authStore.user">
                 <div class="profile-grid">
                   <div class="profile-item">
-                    <span>Username</span>
-                    <strong>{{ authStore.user.username || authStore.user.name || 'Unknown player' }}</strong>
+                    <span>Usuari</span>
+                    <strong>{{ authStore.user.username || authStore.user.name || 'Jugador desconegut' }}</strong>
                   </div>
                   <div class="profile-item">
-                    <span>Estadistiques</span>
-                    <strong>Consulta la vista completa al perfil</strong>
+                    <span>Estat</span>
+                    <strong>Sessió activa</strong>
                   </div>
                 </div>
 
@@ -81,7 +81,7 @@
                     variant="flat"
                     to="/profile/estadistiques"
                   >
-                    Obrir Estadistiques
+                    Veure Estadístiques
                   </v-btn>
                   <v-btn
                     class="logout-outline"
@@ -89,7 +89,7 @@
                     variant="outlined"
                     @click="authStore.logout()"
                   >
-                    Logout
+                    Sortir
                   </v-btn>
                 </div>
               </template>
@@ -101,9 +101,9 @@
               >
                 <div class="text-center">
                   <v-icon class="mb-4" icon="mdi-account-circle-outline" size="72" />
-                  <p class="placeholder-title">Your account data appears here after login.</p>
+                  <p class="placeholder-title">Les teves dades apareixeran aquí.</p>
                   <p class="placeholder-copy">
-                    Inicia sessió i després podràs veure totes les estadístiques a Profile/Estadistiques.
+                    Un cop hagis entrat, podràs veure el detall de les teves victòries i el progrés mensual.
                   </p>
                 </div>
               </v-sheet>
@@ -131,9 +131,11 @@
 
   async function handleLogin () {
     await authStore.login({ ...credentials })
-    credentials.username = ''
-    credentials.password = ''
-    await router.push('/profile/estadistiques')
+    if (!authStore.error) {
+        credentials.username = ''
+        credentials.password = ''
+        await router.push('/profile/estadistiques')
+    }
   }
 
   onMounted(() => {

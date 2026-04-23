@@ -3,11 +3,11 @@
     <v-container class="py-10 py-md-16">
       <section class="hero-grid">
         <v-sheet class="hero-panel" rounded="xl">
-          <p class="eyebrow">Story-driven multiplayer arena</p>
-          <h1 class="hero-title">Step into TR3 Enrique and fight for the top of the board.</h1>
+          <p class="eyebrow">Arena multijugador d'acció pura</p>
+          <h1 class="hero-title">Domina la pista a Explosive Race i puja al podi.</h1>
           <p class="hero-copy">
-            Game Hub is the control room for your players: game updates, download access,
-            live rankings, and profile progression in one place.
+            Benvingut al Game Hub oficial. Gestiona el teu progrés, consulta el rànquing 
+            en temps real i descarrega l'última versió per començar a competir.
           </p>
 
           <div class="hero-actions">
@@ -19,7 +19,7 @@
               to="/downloads"
               variant="flat"
             >
-              Download The Build
+              Descarrega el Joc
             </v-btn>
             <v-btn
               class="cta-secondary"
@@ -28,14 +28,14 @@
               to="/login"
               variant="outlined"
             >
-              Access Profile
+              Accedeix al Perfil
             </v-btn>
           </div>
         </v-sheet>
 
         <v-card class="hero-stats" rounded="xl" variant="tonal">
           <v-card-text>
-            <p class="stats-label">Top 10 games won del mes</p>
+            <p class="stats-label">Top 10 Victòries del Mes</p>
             <v-progress-linear
               v-if="rankingStore.loading"
               color="#f1b36b"
@@ -57,7 +57,7 @@
               >
                 <div>
                   <p class="player-name">{{ player.name }}</p>
-                  <p class="player-rank">Rank #{{ player.position }}</p>
+                  <p class="player-rank">Posició #{{ player.position }}</p>
                 </div>
                 <span class="player-score">{{ player.gamesWon }} W</span>
               </div>
@@ -68,31 +68,31 @@
 
       <section class="info-grid mt-8 mt-md-12">
         <v-card class="info-card" rounded="xl">
-          <v-card-title>What players get</v-card-title>
+          <v-card-title>Què t'espera?</v-card-title>
           <v-card-text>
             <div class="feature-list">
               <div class="feature-item">
                 <v-icon icon="mdi-sword-cross" />
-                <span>Competitive Unity gameplay with persistent ranking data.</span>
+                <span>Competició intensa a Unity amb rànquings mundials.</span>
               </div>
               <div class="feature-item">
                 <v-icon icon="mdi-cloud-download" />
-                <span>Fast access to the latest desktop build from a single download page.</span>
+                <span>Actualitzacions automàtiques i accés directe a la build.</span>
               </div>
               <div class="feature-item">
                 <v-icon icon="mdi-account-badge" />
-                <span>Authenticated player profiles connected to your backend API.</span>
+                <span>Perfil personalitzat connectat amb la teva activitat.</span>
               </div>
             </div>
           </v-card-text>
         </v-card>
 
         <v-card class="info-card accent-card" rounded="xl">
-          <v-card-title>Backend-ready frontend</v-card-title>
+          <v-card-title>Sincronització en Temps Real</v-card-title>
           <v-card-text>
-            The authentication and ranking flows are wired against configurable REST
-            endpoints using `VITE_API_URL`, so the frontend can point at your MongoDB Atlas
-            backend without changing the page components.
+            La teva puntuació es guarda automàticament a MongoDB Atlas. 
+            Cada victòria compta per al rànquing mensual, on només els millors 
+            aconsegueixen aparèixer al Top 10 oficial de la temporada.
           </v-card-text>
         </v-card>
       </section>

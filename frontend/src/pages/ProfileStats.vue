@@ -2,10 +2,10 @@
   <div class="stats-page">
     <v-container class="py-10 py-md-16">
       <section class="stats-header mb-8">
-        <p class="stats-kicker">Perfil</p>
-        <h1 class="stats-title">Estadistiques del jugador</h1>
+        <p class="stats-kicker">Àrea de Jugador</p>
+        <h1 class="stats-title">Estadístiques del jugador</h1>
         <p class="stats-copy">
-          Dades persistents carregades des de MongoDB Atlas. El ranking global mostra només les victòries del mes.
+          Consulta el teu progrés a Explosive Race. Les dades es sincronitzen en temps real amb el rànquing global.
         </p>
       </section>
 
@@ -36,27 +36,27 @@
 
           <div v-else class="stats-grid">
             <article class="stat-card warm">
-              <span>Games Won (Mes)</span>
+              <span>Victòries (Mes)</span>
               <strong>{{ valueOrZero(stats.monthlyGamesWon) }}</strong>
             </article>
             <article class="stat-card">
-              <span>Games Won (Total)</span>
+              <span>Victòries (Total)</span>
               <strong>{{ valueOrZero(stats.gamesWon) }}</strong>
             </article>
             <article class="stat-card">
-              <span>Games Played</span>
+              <span>Partides Jugades</span>
               <strong>{{ valueOrZero(stats.gamesPlayed) }}</strong>
             </article>
             <article class="stat-card">
-              <span>Items Used</span>
+              <span>Ítems Utilitzats</span>
               <strong>{{ valueOrZero(stats.itemsUsed) }}</strong>
             </article>
             <article class="stat-card">
-              <span>Coins Collected</span>
+              <span>Monedes</span>
               <strong>{{ valueOrZero(stats.coinsCollected) }}</strong>
             </article>
             <article class="stat-card">
-              <span>Deaths</span>
+              <span>Mortes</span>
               <strong>{{ valueOrZero(stats.deaths) }}</strong>
             </article>
           </div>
@@ -76,7 +76,7 @@
               variant="outlined"
               @click="authStore.logout()"
             >
-              Logout
+              Sortir
             </v-btn>
           </div>
         </v-card-text>
