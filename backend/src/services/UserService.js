@@ -1,5 +1,38 @@
 const bcrypt = require('bcryptjs');
 
+function toNonNegativeNumber(value) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+}
+
+function getCurrentMonthKey() {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    return `${now.getFullYear()}-${month}`;
+}
+
+function getCurrentMonthGamesWon(user) {
+    const monthKey = getCurrentMonthKey();
+
+    if (user?.gamesWonByMonth && typeof user.gamesWonByMonth === 'object') {
+        return toNonNegativeNumber(user.gamesWonByMonth[monthKey]);
+    }
+
+    if (Array.isArray(user?.monthlyStats)) {
+        const monthStats = user.monthlyStats.find(entry => entry?.month === monthKey);
+        if (monthStats) {
+            return toNonNegativeNumber(monthStats.gamesWon);
+        }
+    }
+
+    return toNonNegativeNumber(user?.gamesWon);
+}
+
+function sanitizeUser(user) {
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+}
+
 class UserService {
     constructor(userRepository) {
         this.userRepository = userRepository;
@@ -15,13 +48,17 @@ class UserService {
         const newUser = await this.userRepository.create({
             username,
             password: hashedPassword,
-            score: 0,
-            wins: 0
+            gamesPlayed: 0,
+            itemsUsed: 0,
+            coinsCollected: 0,
+            deaths: 0,
+            gamesWon: 0,
+            gamesWonByMonth: {
+                [getCurrentMonthKey()]: 0,
+            },
         });
 
-        // No retornem la contrasenya
-        const { password: _, ...userWithoutPassword } = newUser;
-        return userWithoutPassword;
+        return sanitizeUser(newUser);
     }
 
     async login(username, password) {
@@ -35,25 +72,52 @@ class UserService {
             throw new Error("Usuari o contrasenya incorrectes");
         }
 
-        const { password: _, ...userWithoutPassword } = user;
-        return userWithoutPassword;
+        return sanitizeUser(user);
     }
 
     async getUserProfile(id) {
         const user = await this.userRepository.findById(id);
         if (!user) throw new Error("Usuari no trobat");
-        
-        const { password: _, ...userWithoutPassword } = user;
-        return userWithoutPassword;
+
+        return sanitizeUser(user);
+    }
+
+    async getUserStatistics(id) {
+        const user = await this.userRepository.findById(id);
+        if (!user) throw new Error("Usuari no trobat");
+
+        const month = getCurrentMonthKey();
+
+        return {
+            id: user.id,
+            username: user.username,
+            gamesPlayed: toNonNegativeNumber(user.gamesPlayed),
+            gamesWon: toNonNegativeNumber(user.gamesWon),
+            monthlyGamesWon: getCurrentMonthGamesWon(user),
+            itemsUsed: toNonNegativeNumber(user.itemsUsed),
+            coinsCollected: toNonNegativeNumber(user.coinsCollected),
+            deaths: toNonNegativeNumber(user.deaths),
+            month,
+        };
     }
 
     async getLeaderboard() {
         const users = await this.userRepository.getAll();
-        // Sort by score descending and take top 10
+
         return users
-            .sort((a, b) => (b.score || 0) - (a.score || 0))
+            .map(user => ({
+                id: user.id,
+                username: user.username,
+                monthlyGamesWon: getCurrentMonthGamesWon(user),
+            }))
+            .sort((a, b) => b.monthlyGamesWon - a.monthlyGamesWon)
             .slice(0, 10)
-            .map(({ password: _, ...user }) => user);
+            .map((user, index) => ({
+                id: user.id,
+                username: user.username,
+                position: index + 1,
+                gamesWon: user.monthlyGamesWon,
+            }));
     }
 }
 

@@ -72,7 +72,10 @@
   const navItems = computed(() => [
     { label: 'Home', to: '/' },
     { label: 'Downloads', to: '/downloads' },
-    { label: authStore.isAuthenticated ? 'Profile' : 'Login', to: '/login' },
+    {
+      label: authStore.isAuthenticated ? 'Estadístiques' : 'Login',
+      to: authStore.isAuthenticated ? '/profile/estadistiques' : '/login',
+    },
   ])
 </script>
 

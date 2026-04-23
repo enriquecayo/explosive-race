@@ -19,12 +19,12 @@
 
               <v-form @submit.prevent="handleLogin">
                 <v-text-field
-                  v-model="credentials.email"
-                  autocomplete="email"
+                  v-model="credentials.username"
+                  autocomplete="username"
                   class="mb-3"
-                  label="Email"
-                  prepend-inner-icon="mdi-email-outline"
-                  type="email"
+                  label="Username"
+                  prepend-inner-icon="mdi-account-outline"
+                  type="text"
                   variant="outlined"
                 />
                 <v-text-field
@@ -69,27 +69,29 @@
                     <strong>{{ authStore.user.username || authStore.user.name || 'Unknown player' }}</strong>
                   </div>
                   <div class="profile-item">
-                    <span>Email</span>
-                    <strong>{{ authStore.user.email || 'No email returned' }}</strong>
-                  </div>
-                  <div class="profile-item">
-                    <span>Country</span>
-                    <strong>{{ authStore.user.country || 'Not set' }}</strong>
-                  </div>
-                  <div class="profile-item">
-                    <span>Rank Points</span>
-                    <strong>{{ authStore.user.points ?? authStore.user.score ?? 0 }}</strong>
+                    <span>Estadistiques</span>
+                    <strong>Consulta la vista completa al perfil</strong>
                   </div>
                 </div>
 
-                <v-btn
-                  class="logout-outline mt-6"
-                  rounded="xl"
-                  variant="outlined"
-                  @click="authStore.logout()"
-                >
-                  Logout
-                </v-btn>
+                <div class="d-flex ga-3 mt-6 flex-wrap">
+                  <v-btn
+                    class="login-btn"
+                    rounded="xl"
+                    variant="flat"
+                    to="/profile/estadistiques"
+                  >
+                    Obrir Estadistiques
+                  </v-btn>
+                  <v-btn
+                    class="logout-outline"
+                    rounded="xl"
+                    variant="outlined"
+                    @click="authStore.logout()"
+                  >
+                    Logout
+                  </v-btn>
+                </div>
               </template>
 
               <v-sheet
@@ -101,7 +103,7 @@
                   <v-icon class="mb-4" icon="mdi-account-circle-outline" size="72" />
                   <p class="placeholder-title">Your account data appears here after login.</p>
                   <p class="placeholder-copy">
-                    The page is already wired to the authentication store and profile endpoint.
+                    Inicia sessió i després podràs veure totes les estadístiques a Profile/Estadistiques.
                   </p>
                 </div>
               </v-sheet>
@@ -115,19 +117,23 @@
 
 <script lang="ts" setup>
   import { onMounted, reactive } from 'vue'
+  import { useRouter } from 'vue-router'
 
   import { useAuthStore } from '@/stores/auth'
 
   const authStore = useAuthStore()
+  const router = useRouter()
 
   const credentials = reactive({
-    email: '',
+    username: '',
     password: '',
   })
 
   async function handleLogin () {
     await authStore.login({ ...credentials })
+    credentials.username = ''
     credentials.password = ''
+    await router.push('/profile/estadistiques')
   }
 
   onMounted(() => {

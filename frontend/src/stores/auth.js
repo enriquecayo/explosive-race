@@ -7,7 +7,7 @@ async function parseResponse(response) {
   const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    throw new Error(data.message || 'Request failed.')
+    throw new Error(data.error || data.message || 'Request failed.')
   }
 
   return data
@@ -29,8 +29,13 @@ export const useAuthStore = defineStore('auth', {
       this.error = ''
 
       try {
+        const payload = {
+          username: credentials.username || credentials.email || '',
+          password: credentials.password || '',
+        }
+
         const response = await fetch(`${API_BASE_URL}/users/login`, {
-          body: JSON.stringify(credentials),
+          body: JSON.stringify(payload),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -42,9 +47,9 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem(TOKEN_KEY, this.token)
         this.user = data.user || null
 
-        // if (!this.user && this.token) {
-        //   await this.fetchProfile()
-        // }
+        if (this.token) {
+          await this.fetchProfile()
+        }
       } catch (error) {
         this.logout()
         this.error = error.message || 'Unable to login.'
@@ -62,14 +67,14 @@ export const useAuthStore = defineStore('auth', {
       this.error = ''
 
       try {
-        const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+        const response = await fetch(`${API_BASE_URL}/users/me/stats`, {
           headers: {
             Authorization: `Bearer ${this.token}`,
           },
         })
         const data = await parseResponse(response)
 
-        this.user = data.user || data.profile || data
+        this.user = data.user || data.profile || data.stats || data
         return this.user
       } catch (error) {
         this.error = error.message || 'Unable to fetch profile.'

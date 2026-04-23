@@ -35,7 +35,7 @@
 
         <v-card class="hero-stats" rounded="xl" variant="tonal">
           <v-card-text>
-            <p class="stats-label">Live leaderboard snapshot</p>
+            <p class="stats-label">Top 10 games won del mes</p>
             <v-progress-linear
               v-if="rankingStore.loading"
               color="#f1b36b"
@@ -59,7 +59,7 @@
                   <p class="player-name">{{ player.name }}</p>
                   <p class="player-rank">Rank #{{ player.position }}</p>
                 </div>
-                <span class="player-score">{{ player.score }}</span>
+                <span class="player-score">{{ player.gamesWon }} W</span>
               </div>
             </div>
           </v-card-text>

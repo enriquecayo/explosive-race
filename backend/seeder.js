@@ -18,27 +18,41 @@ async function seed() {
 
     console.log("Generant usuaris de prova...");
     const hashedPassword = await bcrypt.hash("1234", 10);
+    const now = new Date();
+    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
     const seedUsers = [
       {
         username: "Enrique",
         password: hashedPassword,
-        score: 2500,
-        wins: 10,
+        gamesPlayed: 50,
+        itemsUsed: 120,
+        coinsCollected: 450,
+        deaths: 5,
+        gamesWon: 15,
+        gamesWonByMonth: { [currentMonthKey]: 15 },
         createdAt: new Date()
       },
       {
         username: "PlayerOne",
         password: hashedPassword,
-        score: 1850,
-        wins: 5,
+        gamesPlayed: 30,
+        itemsUsed: 85,
+        coinsCollected: 210,
+        deaths: 12,
+        gamesWon: 8,
+        gamesWonByMonth: { [currentMonthKey]: 8 },
         createdAt: new Date()
       },
       {
         username: "UnityDev",
         password: hashedPassword,
-        score: 3200,
-        wins: 15,
+        gamesPlayed: 75,
+        itemsUsed: 200,
+        coinsCollected: 890,
+        deaths: 3,
+        gamesWon: 25,
+        gamesWonByMonth: { [currentMonthKey]: 25 },
         createdAt: new Date()
       }
     ];
