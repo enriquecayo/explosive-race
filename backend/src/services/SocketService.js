@@ -45,7 +45,7 @@ class SocketService {
 
         switch (type) {
             case 'JOIN_ROOM':
-                this.joinRoom(ws, payload.roomName, payload.username);
+                this.joinRoom(ws, payload?.roomName, payload?.username, payload?.userId);
                 break;
             case 'START_GAME':
                 this.startGame(ws);
@@ -59,7 +59,12 @@ class SocketService {
         }
     }
 
-    joinRoom(ws, roomName, username) {
+    joinRoom(ws, roomName, username, userId) {
+        if (!roomName || !username) {
+            ws.send(JSON.stringify({ type: 'ERROR', payload: 'Falten dades per unir-se a la sala' }));
+            return;
+        }
+
         if (!this.rooms.has(roomName)) {
             this.rooms.set(roomName, new Set());
         }
@@ -78,6 +83,7 @@ class SocketService {
 
         ws.roomName = roomName;
         ws.username = username;
+        ws.userId = Number.isInteger(userId) ? userId : 0;
         ws.playerIndex = index;
         room.add(ws);
 
@@ -87,6 +93,8 @@ class SocketService {
             type: 'USER_JOINED', 
             payload: { username, playerIndex: index, playerCount: room.size } 
         }, true);
+
+        this.broadcastPlayerList(roomName);
     }
 
     startGame(ws) {
@@ -98,6 +106,7 @@ class SocketService {
         // Preparem la llista de jugadors
         const playersList = Array.from(room).map(client => ({
             username: client.username,
+            id: client.userId || 0,
             index: client.playerIndex
         }));
 
@@ -108,6 +117,32 @@ class SocketService {
             type: 'START_GAME',
             payload: { players: playersList }
         }, true);
+    }
+
+    broadcastPlayerList(roomName) {
+        if (!roomName || !this.rooms.has(roomName)) return;
+
+        const room = this.rooms.get(roomName);
+        const players = Array.from(room).map(client => ({
+            username: client.username,
+            id: client.userId || 0,
+            index: client.playerIndex
+        }));
+
+        const message = JSON.stringify({
+            type: 'UPDATE_PLAYER_LIST',
+            payload: {
+                roomName,
+                playerCount: players.length,
+                players
+            }
+        });
+
+        room.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
     }
 
     broadcastToRoom(ws, message, includeSelf = false) {
@@ -138,6 +173,7 @@ class SocketService {
                     type: 'USER_LEFT', 
                     payload: { username: ws.username } 
                 });
+                this.broadcastPlayerList(roomName);
             }
         }
         console.log('Connexió tancada');
