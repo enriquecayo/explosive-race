@@ -5,6 +5,8 @@ class SocketService {
     constructor(server) {
         this.wss = new WebSocketServer({ server });
         this.rooms = new Map(); // Map de roomName -> Set de clients
+        this.socketIdToUserId = new Map();
+        this.nextGeneratedUserId = 1;
         this.init();
     }
 
@@ -47,7 +49,7 @@ class SocketService {
 
         switch (type) {
             case 'JOIN_ROOM':
-                this.joinRoom(ws, payload?.roomName, payload?.username, payload?.userId);
+                this.joinRoom(ws, payload?.roomName, payload?.username);
                 break;
             case 'START_GAME':
                 this.startGame(ws);
@@ -63,7 +65,7 @@ class SocketService {
         }
     }
 
-    joinRoom(ws, roomName, username, userId) {
+    joinRoom(ws, roomName, username) {
         const cleanRoomName = typeof roomName === 'string' ? roomName.trim() : '';
         const cleanUsername = typeof username === 'string' ? username.trim() : '';
 
@@ -95,7 +97,7 @@ class SocketService {
 
         ws.roomName = cleanRoomName;
         ws.username = cleanUsername;
-        ws.userId = Number.isInteger(userId) && userId > 0 ? userId : 0;
+        ws.userId = this.getOrCreateGeneratedUserId(ws.socketId);
         ws.playerIndex = index;
         room.add(ws);
 
@@ -257,7 +259,21 @@ class SocketService {
 
     handleDisconnect(ws) {
         this.removeClientFromRoom(ws, true);
+        if (ws.socketId) {
+            this.socketIdToUserId.delete(ws.socketId);
+        }
         console.log('Connexió tancada');
+    }
+
+    getOrCreateGeneratedUserId(socketId) {
+        if (!socketId) return 0;
+        if (this.socketIdToUserId.has(socketId)) {
+            return this.socketIdToUserId.get(socketId);
+        }
+
+        const generatedUserId = this.nextGeneratedUserId++;
+        this.socketIdToUserId.set(socketId, generatedUserId);
+        return generatedUserId;
     }
 }
 

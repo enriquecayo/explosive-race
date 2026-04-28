@@ -8,7 +8,7 @@ const { connectDB } = require("./db");
 
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -32,7 +32,7 @@ connectDB().then(() => {
     server.listen(PORT, "0.0.0.0", () => {
         console.log(`Server corrent en el port ${PORT}`);
         console.log(`Backend de la TR3 iniciat a http://localhost:${PORT}`);
-        console.log(`WebSockets escoltant al fameix port.`);
+        console.log(`WebSockets escoltant al mateix port.`);
     });
 }).catch(err => {
     console.error("No s'ha pogut iniciar el servidor perquè ha fallat la connexió a la DB:", err);
