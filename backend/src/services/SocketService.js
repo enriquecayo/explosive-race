@@ -1,15 +1,16 @@
+const { randomUUID } = require('crypto');
 const { WebSocketServer, WebSocket } = require('ws');
 
 class SocketService {
     constructor(server) {
         this.wss = new WebSocketServer({ server });
         this.rooms = new Map(); // Map de roomName -> Set de clients
-        this.nextUnityId = 1000; // Comptador per a IDs únics de sessió
         this.init();
     }
 
     init() {
         this.wss.on('connection', (ws) => {
+            ws.socketId = randomUUID();
             console.log('Nova connexió WebSocket establerta');
             ws.isAlive = true;
 
@@ -52,8 +53,10 @@ class SocketService {
                 this.startGame(ws);
                 break;
             case 'MOVE':
+                this.handleMove(ws, payload);
+                break;
             case 'ACTION':
-                this.broadcastToRoom(ws, message);
+                this.handleAction(ws, payload);
                 break;
             default:
                 console.log('Tipus de missatge desconegut:', type);
@@ -61,16 +64,24 @@ class SocketService {
     }
 
     joinRoom(ws, roomName, username, userId) {
-        if (!roomName || !username) {
+        const cleanRoomName = typeof roomName === 'string' ? roomName.trim() : '';
+        const cleanUsername = typeof username === 'string' ? username.trim() : '';
+
+        if (!cleanRoomName || !cleanUsername) {
             ws.send(JSON.stringify({ type: 'ERROR', payload: 'Falten dades per unir-se a la sala' }));
             return;
         }
 
-        if (!this.rooms.has(roomName)) {
-            this.rooms.set(roomName, new Set());
+        // Si el client ja era en una sala, el traiem abans de reassignar-lo.
+        if (ws.roomName) {
+            this.removeClientFromRoom(ws, true);
         }
 
-        const room = this.rooms.get(roomName);
+        if (!this.rooms.has(cleanRoomName)) {
+            this.rooms.set(cleanRoomName, new Set());
+        }
+
+        const room = this.rooms.get(cleanRoomName);
         
         if (room.size >= 3) {
             ws.send(JSON.stringify({ type: 'ERROR', payload: 'La sala està plena' }));
@@ -82,35 +93,23 @@ class SocketService {
         let index = 0;
         while (usedIndexes.includes(index)) index++;
 
-        // GENEREM UN ID ÚNIC SI NO EN TENIM UN DE VÀLID
-        let finalId = Number.isInteger(userId) && userId > 0 ? userId : this.nextUnityId++;
-        
-        // Verifiquem que no estigui ja a la sala (per si de cas hi ha col·lisió)
-        const usedIds = Array.from(room).map(client => client.userId);
-        if (usedIds.includes(finalId)) {
-            finalId = this.nextUnityId++;
-        }
-
-        ws.roomName = roomName;
-        ws.username = username;
-        ws.userId = finalId;
+        ws.roomName = cleanRoomName;
+        ws.username = cleanUsername;
+        ws.userId = Number.isInteger(userId) && userId > 0 ? userId : 0;
         ws.playerIndex = index;
         room.add(ws);
 
-        console.log(`Usuari ${username} (ID: ${finalId}, Index: ${index}) s'ha unit a: ${roomName}`);
+        console.log(`Usuari ${ws.username} (socketId: ${ws.socketId}, userId: ${ws.userId}, Index: ${index}) s'ha unit a: ${cleanRoomName}`);
         
-        // Enviem el USER_JOINED amb el nou userId
+        // Enviem identitat completa perquè frontend pugui mapar per socketId (únic).
+        const joinedPayload = this.buildPlayerState(ws);
+        joinedPayload.playerCount = room.size;
         this.broadcastToRoom(ws, { 
             type: 'USER_JOINED', 
-            payload: { 
-                username, 
-                userId: finalId, 
-                playerIndex: index, 
-                playerCount: room.size 
-            } 
+            payload: joinedPayload
         }, true);
 
-        this.broadcastPlayerList(roomName);
+        this.broadcastPlayerList(cleanRoomName);
     }
 
     startGame(ws) {
@@ -120,11 +119,7 @@ class SocketService {
         const room = this.rooms.get(roomName);
         
         // Preparem la llista de jugadors
-        const playersList = Array.from(room).map(client => ({
-            username: client.username,
-            id: client.userId,
-            index: client.playerIndex
-        }));
+        const playersList = this.getRoomPlayers(roomName);
 
         console.log(`Iniciant partida a la sala ${roomName} amb ${playersList.length} jugadors`);
 
@@ -139,11 +134,7 @@ class SocketService {
         if (!roomName || !this.rooms.has(roomName)) return;
 
         const room = this.rooms.get(roomName);
-        const players = Array.from(room).map(client => ({
-            username: client.username,
-            id: client.userId,
-            index: client.playerIndex
-        }));
+        const players = this.getRoomPlayers(roomName);
 
         const message = JSON.stringify({
             type: 'UPDATE_PLAYER_LIST',
@@ -177,21 +168,95 @@ class SocketService {
         });
     }
 
-    handleDisconnect(ws) {
-        const roomName = ws.roomName;
-        if (roomName && this.rooms.has(roomName)) {
-            const room = this.rooms.get(roomName);
-            room.delete(ws);
-            if (room.size === 0) {
-                this.rooms.delete(roomName);
-            } else {
-                this.broadcastToRoom(ws, { 
-                    type: 'USER_LEFT', 
-                    payload: { username: ws.username } 
-                });
-                this.broadcastPlayerList(roomName);
+    handleMove(ws, payload) {
+        if (!ws.roomName || !this.rooms.has(ws.roomName)) return;
+        if (!payload || !payload.position) return;
+
+        const facingDirection = Number(payload.facingDirection);
+        const message = {
+            type: 'MOVE',
+            payload: {
+                username: ws.username,
+                userId: ws.userId,
+                socketId: ws.socketId,
+                playerIndex: ws.playerIndex,
+                position: payload.position,
+                facingDirection: Number.isFinite(facingDirection) ? facingDirection : 1
             }
+        };
+
+        this.broadcastToRoom(ws, message);
+    }
+
+    handleAction(ws, payload) {
+        if (!ws.roomName || !this.rooms.has(ws.roomName)) return;
+        if (!payload) return;
+
+        const actionPayload = {
+            ...payload,
+            username: ws.username,
+            userId: ws.userId,
+            socketId: ws.socketId,
+            playerIndex: ws.playerIndex
+        };
+
+        this.broadcastToRoom(ws, {
+            type: 'ACTION',
+            payload: actionPayload
+        });
+    }
+
+    buildPlayerState(client) {
+        return {
+            username: client.username,
+            userId: client.userId || 0,
+            id: client.userId || 0,
+            socketId: client.socketId,
+            index: client.playerIndex,
+            playerIndex: client.playerIndex
+        };
+    }
+
+    getRoomPlayers(roomName) {
+        if (!roomName || !this.rooms.has(roomName)) return [];
+        const room = this.rooms.get(roomName);
+        const bySocketId = new Map();
+
+        Array.from(room).forEach((client) => {
+            if (!client || !client.socketId) return;
+            bySocketId.set(client.socketId, this.buildPlayerState(client));
+        });
+
+        return Array.from(bySocketId.values()).sort((a, b) => a.index - b.index);
+    }
+
+    removeClientFromRoom(ws, notify = true) {
+        const roomName = ws.roomName;
+        if (!roomName || !this.rooms.has(roomName)) return;
+
+        const room = this.rooms.get(roomName);
+        room.delete(ws);
+
+        if (room.size === 0) {
+            this.rooms.delete(roomName);
+        } else if (notify) {
+            this.broadcastToRoom(ws, {
+                type: 'USER_LEFT',
+                payload: {
+                    username: ws.username,
+                    userId: ws.userId || 0,
+                    socketId: ws.socketId
+                }
+            });
+            this.broadcastPlayerList(roomName);
         }
+
+        ws.roomName = null;
+        ws.playerIndex = null;
+    }
+
+    handleDisconnect(ws) {
+        this.removeClientFromRoom(ws, true);
         console.log('Connexió tancada');
     }
 }
