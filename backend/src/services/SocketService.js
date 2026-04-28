@@ -4,6 +4,7 @@ class SocketService {
     constructor(server) {
         this.wss = new WebSocketServer({ server });
         this.rooms = new Map(); // Map de roomName -> Set de clients
+        this.nextUnityId = 1000; // Comptador per a IDs únics de sessió
         this.init();
     }
 
@@ -81,17 +82,32 @@ class SocketService {
         let index = 0;
         while (usedIndexes.includes(index)) index++;
 
+        // GENEREM UN ID ÚNIC SI NO EN TENIM UN DE VÀLID
+        let finalId = Number.isInteger(userId) && userId > 0 ? userId : this.nextUnityId++;
+        
+        // Verifiquem que no estigui ja a la sala (per si de cas hi ha col·lisió)
+        const usedIds = Array.from(room).map(client => client.userId);
+        if (usedIds.includes(finalId)) {
+            finalId = this.nextUnityId++;
+        }
+
         ws.roomName = roomName;
         ws.username = username;
-        ws.userId = Number.isInteger(userId) ? userId : 0;
+        ws.userId = finalId;
         ws.playerIndex = index;
         room.add(ws);
 
-        console.log(`Usuari ${username} (Index: ${index}) s'ha unit a: ${roomName}`);
+        console.log(`Usuari ${username} (ID: ${finalId}, Index: ${index}) s'ha unit a: ${roomName}`);
         
+        // Enviem el USER_JOINED amb el nou userId
         this.broadcastToRoom(ws, { 
             type: 'USER_JOINED', 
-            payload: { username, playerIndex: index, playerCount: room.size } 
+            payload: { 
+                username, 
+                userId: finalId, 
+                playerIndex: index, 
+                playerCount: room.size 
+            } 
         }, true);
 
         this.broadcastPlayerList(roomName);
@@ -106,7 +122,7 @@ class SocketService {
         // Preparem la llista de jugadors
         const playersList = Array.from(room).map(client => ({
             username: client.username,
-            id: client.userId || 0,
+            id: client.userId,
             index: client.playerIndex
         }));
 
@@ -125,7 +141,7 @@ class SocketService {
         const room = this.rooms.get(roomName);
         const players = Array.from(room).map(client => ({
             username: client.username,
-            id: client.userId || 0,
+            id: client.userId,
             index: client.playerIndex
         }));
 
