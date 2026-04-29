@@ -16,68 +16,85 @@
       </div>
 
       <v-row class="mt-2" dense>
-        <v-col cols="12" md="8">
+        <v-col cols="12" md="6">
           <v-card class="download-card fill-height" rounded="xl">
             <v-card-title class="text-h5">Build per a Windows</v-card-title>
-            <v-card-subtitle>Versió 0.6.0 • Actualitzat recentment</v-card-subtitle>
+            <v-card-subtitle>Versió 1.0.0 • Estable</v-card-subtitle>
             <v-card-text class="pt-6">
               <p class="download-copy">
-                Utilitza aquest botó per descarregar l'instal·lador d'Explosive Race. 
-                Recorda que cal estar registrat per sincronitzar les teves victòries.
+                Utilitza aquest botó per descarregar el fitxer ZIP per a Windows. 
+                Descomprimeix-lo i executa el fitxer executable.
               </p>
 
               <div class="release-meta">
                 <div>
                   <span class="meta-label">Paquet</span>
-                  <strong>Explosive-Race-Setup.exe</strong>
+                  <strong>joc-windows.zip</strong>
                 </div>
                 <div>
-                  <span class="meta-label">Mida estimada</span>
-                  <strong>1.2 GB</strong>
+                  <span class="meta-label">Mida</span>
+                  <strong>41.3 MB</strong>
                 </div>
                 <div>
-                  <span class="meta-label">Compatibilitat</span>
-                  <strong>Windows 10 / 11</strong>
+                  <span class="meta-label">SO</span>
+                  <strong>Windows</strong>
                 </div>
               </div>
             </v-card-text>
             <v-card-actions class="px-6 pb-6">
               <v-btn
                 class="download-btn"
-                href="#"
+                href="/downloads/joc-windows.zip"
+                download
                 prepend-icon="mdi-download"
                 rounded="xl"
                 size="large"
-                target="_blank"
                 variant="flat"
               >
-                Descarregar executable
+                Descarregar Windows
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
 
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="6">
           <v-card class="download-card fill-height" rounded="xl">
-            <v-card-title>Requisits del sistema</v-card-title>
-            <v-card-text class="requirements-list">
-              <div class="requirement-item">
-                <span>CPU</span>
-                <strong>Intel i5 / Ryzen 5 o millor</strong>
-              </div>
-              <div class="requirement-item">
-                <span>RAM</span>
-                <strong>8 GB mínim</strong>
-              </div>
-              <div class="requirement-item">
-                <span>GPU</span>
-                <strong>Compatible amb DirectX 11</strong>
-              </div>
-              <div class="requirement-item">
-                <span>Espai</span>
-                <strong>2 GB lliures</strong>
+            <v-card-title class="text-h5">Build per a Linux</v-card-title>
+            <v-card-subtitle>Versió 1.0.0 • Estable</v-card-subtitle>
+            <v-card-text class="pt-6">
+              <p class="download-copy">
+                Utilitza aquest botó per descarregar el fitxer ZIP per a Linux. 
+                Recorda donar permisos d'execució al binari.
+              </p>
+
+              <div class="release-meta">
+                <div>
+                  <span class="meta-label">Paquet</span>
+                  <strong>joc-linux.zip</strong>
+                </div>
+                <div>
+                  <span class="meta-label">Mida</span>
+                  <strong>46.5 MB</strong>
+                </div>
+                <div>
+                  <span class="meta-label">SO</span>
+                  <strong>Linux (x64)</strong>
+                </div>
               </div>
             </v-card-text>
+            <v-card-actions class="px-6 pb-6">
+              <v-btn
+                class="download-btn"
+                href="/downloads/joc-linux.zip"
+                download
+                prepend-icon="mdi-download"
+                rounded="xl"
+                size="large"
+                variant="flat"
+              >
+                Descarregar Linux
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
